@@ -1,0 +1,56 @@
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
+using namespace cv;
+
+void applyFilter(Mat& image, int filterType) {
+    switch (filterType) {
+        case 1:
+            GaussianBlur(image, image, Size(5, 5), 0);
+            break;
+        case 2:
+            cvtColor(image, image, COLOR_BGR2GRAY);
+            break;
+        case 3:
+            Canny(image, image, 100, 200);
+            break;
+        default:
+            std::cout << "Invalid filter type." << std::endl;
+    }
+}
+
+int main() {
+    Mat image = imread("input.jpg");
+
+    if (image.empty()) {
+        std::cerr << "Error: Could not read image." << std::endl;
+        return 1;
+    }
+
+    namedWindow("Image Processing", WINDOW_NORMAL);
+
+    int filterType = 0;
+    while (true) {
+        imshow("Image Processing", image);
+
+        std::cout << "Choose a filter to apply:" << std::endl;
+        std::cout << "1. Gaussian Blur" << std::endl;
+        std::cout << "2. Convert to Grayscale" << std::endl;
+        std::cout << "3. Edge Detection (Canny)" << std::endl;
+        std::cout << "Enter your choice (0 to quit): ";
+        std::cin >> filterType;
+
+        if (filterType == 0) {
+            break;
+        }
+
+        Mat originalImage = imread("input.jpg"); // Load original image again
+        image = originalImage.clone(); // Reset the image before applying the filter
+
+        applyFilter(image, filterType);
+    }
+
+    destroyAllWindows();
+
+    return 0;
+}
